@@ -1,0 +1,56 @@
+[project]
+name = "winctl-mcp"
+version = "0.1.0"
+description = "Local MCP server giving an agent full control of a Windows desktop: screen, mouse, keyboard, windows, applications, PowerShell, notifications."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["mcp", "windows", "automation", "claude", "screenshot", "gui-automation"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Topic :: Desktop Environment",
+]
+dependencies = [
+    # Deliberate upper bound: `mcp` 2.0 removed `mcp.server.fastmcp`, which
+    # server.py is written against. Without it, a fresh install breaks at import.
+    "mcp>=1.9.0,<2",
+    "mss>=9.0.1",
+    "pillow>=10.3.0",
+    "httpx>=0.27.0",
+    # Declared explicitly: `mcp` brings it in transitively today (through
+    # pydantic-settings), but reading the .env is a feature of its own and its
+    # absence would be silent -- no error, just a configuration never loaded.
+    "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-timeout>=2.3",
+]
+
+[project.scripts]
+winctl-mcp = "winctl.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/winctl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# No test may block the suite.
+timeout = 60
+# Warnings are errors. One documented exception:
+filterwarnings = [
+    "error",
+    # mss 10.2 deprecates `mss.mss()` in favour of `mss.MSS()`. capture.py still
+    # uses the old form, with no consequence at runtime today.
+    "ignore:mss.mss is deprecated:DeprecationWarning",
+]
