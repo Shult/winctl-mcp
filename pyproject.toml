@@ -1,6 +1,6 @@
 [project]
 name = "winctl-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "Local MCP server giving an agent full control of a Windows desktop: screen, mouse, keyboard, windows, applications, PowerShell, notifications."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -32,6 +32,10 @@ dev = [
     "pytest>=8.0",
     "pytest-timeout>=2.3",
 ]
+
+[project.urls]
+Repository = "https://github.com/Shult/winctl-mcp"
+Issues = "https://github.com/Shult/winctl-mcp/issues"
 
 [project.scripts]
 winctl-mcp = "winctl.server:main"

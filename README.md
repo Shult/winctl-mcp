@@ -11,7 +11,7 @@ registration line, and the agent sees your desktop.
 Everything stays on the machine. Nothing leaves it, except the summaries you
 explicitly ask for, to the channel you configure yourself.
 
-![Demo](docs/demo.gif)
+![Demo](https://raw.githubusercontent.com/Shult/winctl-mcp/main/docs/demo.gif)
 
 ---
 
@@ -36,7 +36,7 @@ uv tool install winctl-mcp
 Or from source:
 
 ```bash
-git clone https://github.com/<OWNER>/winctl-mcp
+git clone https://github.com/Shult/winctl-mcp
 cd winctl-mcp
 uv sync
 ```
