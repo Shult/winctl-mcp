@@ -1,19 +1,12 @@
 # Documentation assets
 
-## `demo.gif` — to be added
+## `demo.gif`
 
-The README reserves a spot for a demo, right under the tagline. It is the first
-thing a visitor sees, and on a project like this one it is what decides: "drives
-a PC" is an unverifiable promise until you have seen it.
+The README shows it right under the tagline. It is the first thing a visitor
+sees, and on a project like this one it is what decides: "drives a PC" is an
+unverifiable promise until you have seen it.
 
-Drop the file here under the name `demo.gif`, then replace the
-`DEMO PLACEHOLDER` comment block in `../README.md` with:
-
-```markdown
-![Demo](docs/demo.gif)
-```
-
-What works well, in decreasing order of strength:
+If it ever needs re-recording, what works well, in decreasing order of strength:
 
 1. **A short, complete round trip** — an instruction in natural language, the
    screenshot, a few clicks, the visible result. Twenty seconds is enough.

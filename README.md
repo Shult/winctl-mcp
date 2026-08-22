@@ -11,12 +11,7 @@ registration line, and the agent sees your desktop.
 Everything stays on the machine. Nothing leaves it, except the summaries you
 explicitly ask for, to the channel you configure yourself.
 
-<!-- ┌──────────────────────────────────────────────────────────────────────┐
-     │ DEMO PLACEHOLDER                                                     │
-     │ Drop a screen recording or a GIF in docs/demo.gif, then replace this │
-     │ comment with:   ![Demo](docs/demo.gif)                               │
-     │ See docs/README.md for what makes a good demo here.                  │
-     └──────────────────────────────────────────────────────────────────────┘ -->
+![Demo](docs/demo.gif)
 
 ---
 
