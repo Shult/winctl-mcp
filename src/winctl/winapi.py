@@ -388,30 +388,30 @@ def hotkey(keys: list[str], hold: float = 0.03) -> None:
             time.sleep(0.008)
 
 
-def _unicode_events(ch: str) -> list[INPUT]:
-    """A character outside the BMP takes two UTF-16 units: inject them separately."""
-    events: list[INPUT] = []
+def _unicode_units(ch: str) -> list[int]:
+    """UTF-16 code units of a character: two for anything outside the BMP."""
     raw = ch.encode("utf-16-le")
-    units = [int.from_bytes(raw[i : i + 2], "little") for i in range(0, len(raw), 2)]
-    for unit in units:
-        for up in (False, True):
-            flags = KEYEVENTF_UNICODE | (KEYEVENTF_KEYUP if up else 0)
-            events.append(
-                INPUT(
-                    type=INPUT_KEYBOARD,
-                    ki=KEYBDINPUT(wVk=0, wScan=unit, dwFlags=flags, time=0, dwExtraInfo=0),
-                )
-            )
-    return events
+    return [int.from_bytes(raw[i : i + 2], "little") for i in range(0, len(raw), 2)]
 
 
-#: Pause between two characters. Modern controls (WinUI / Text Services
-#: Framework, including the Windows 11 Notepad) lose the contents of bursts of
-#: Unicode events: past the first few characters, they all take the value of the
-#: last one. One SendInput call per character, spaced by a minimal pause,
-#: delivers the text intact everywhere. For long texts, prefer going through the
-#: clipboard.
-CHAR_DELAY = 0.003
+def _unit_event(unit: int, up: bool) -> INPUT:
+    flags = KEYEVENTF_UNICODE | (KEYEVENTF_KEYUP if up else 0)
+    return INPUT(
+        type=INPUT_KEYBOARD,
+        ki=KEYBDINPUT(wVk=0, wScan=unit, dwFlags=flags, time=0, dwExtraInfo=0),
+    )
+
+
+#: Pause after each SendInput call. Modern controls (WinUI / Text Services
+#: Framework, including the Windows 11 Notepad) read injected Unicode events
+#: asynchronously: when the control falls behind, every event still pending
+#: takes the value of the most recent one. This corrupts plain text ("winctl"
+#: comes out "nnnctl") and destroys surrogate pairs even when both halves share
+#: a single SendInput call — an emoji lands as two low surrogates, i.e.
+#: nothing. Measured on a cold-started Notepad under load: 3 ms and batched
+#: pairs fail every round; one call per UTF-16 unit spaced 15 ms never fails.
+#: For long texts, prefer going through the clipboard.
+CHAR_DELAY = 0.015
 
 
 def type_text(text: str, wpm: float = 0.0, char_delay: float | None = None) -> int:
@@ -419,7 +419,8 @@ def type_text(text: str, wpm: float = 0.0, char_delay: float | None = None) -> i
 
     Independent from the keyboard layout: 'é', 'ç' or '€' come out identical on
     AZERTY and QWERTY. Line breaks are converted to Enter, because
-    KEYEVENTF_UNICODE does not inject a usable newline.
+    KEYEVENTF_UNICODE does not inject a usable newline. Each UTF-16 unit gets
+    its own SendInput call — see CHAR_DELAY for why batching is not safe.
     """
     typed = 0
     delay = CHAR_DELAY if char_delay is None else char_delay
@@ -429,14 +430,19 @@ def type_text(text: str, wpm: float = 0.0, char_delay: float | None = None) -> i
     for ch in text:
         if ch == "\n":
             press_key("enter")
+            if delay:
+                time.sleep(delay)
         elif ch == "\r":
             continue
         elif ch == "\t":
             press_key("tab")
+            if delay:
+                time.sleep(delay)
         else:
-            _send(*_unicode_events(ch))
-        if delay:
-            time.sleep(delay)
+            for unit in _unicode_units(ch):
+                _send(_unit_event(unit, False), _unit_event(unit, True))
+                if delay:
+                    time.sleep(delay)
         typed += 1
     return typed
 
