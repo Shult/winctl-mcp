@@ -1,0 +1,31 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    # winctl is ctypes on top of Win32: the suite only makes sense on Windows.
+    # GitHub's Windows runners have an interactive desktop, so the capture
+    # tests grab a real screen there too.
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The lower bound of requires-python, and the latest stable release.
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install
+        run: uv sync --locked --group dev
+      - name: Run the suite
+        run: uv run pytest

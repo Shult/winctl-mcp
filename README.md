@@ -1,5 +1,7 @@
 # winctl
 
+[![Tests](https://github.com/Shult/winctl-mcp/actions/workflows/tests.yml/badge.svg)](https://github.com/Shult/winctl-mcp/actions/workflows/tests.yml)
+
 **Give your agent the hands and eyes of a Windows user.**
 
 `winctl` is a local MCP server that exposes the whole desktop: see the screen,
@@ -308,6 +310,9 @@ Two `autouse` guardrails are set in `tests/conftest.py` and checked by
 `tests/test_guardrails.py`: `httpx` and `smtplib` raise as soon as they are
 touched. The suite runs on the machine it drives; it must not be able to send a
 real message.
+
+The same suite runs on GitHub Actions (`windows-latest`, Python 3.11 and
+3.13) on every push to `main` and every pull request.
 
 **What is not covered, and why.** Input injection — `type_text`, `mouse_click`,
 `hotkey` — is not tested automatically: a test checking that `Ctrl+W` works
