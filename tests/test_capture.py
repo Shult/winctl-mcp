@@ -9,6 +9,7 @@ the test.
 from __future__ import annotations
 
 import io
+import warnings
 
 import pytest
 from PIL import Image
@@ -37,6 +38,16 @@ class TestMonitors:
             assert screen["y"] >= whole["y"]
             assert screen["x"] + screen["width"] <= whole["x"] + whole["width"]
             assert screen["y"] + screen["height"] <= whole["y"] + whole["height"]
+
+
+    def test_no_deprecated_mss_api(self):
+        """`mss.mss()` is deprecated since mss 10.2 and will be removed: a capture
+        must go through `mss.MSS()`. Explicit here, so the guard survives a change
+        to the suite-wide `filterwarnings`."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", DeprecationWarning)
+            capture.monitors()
+            capture.grab(monitor=1, max_width=100)
 
 
 class TestGrab:

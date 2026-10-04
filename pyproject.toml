@@ -18,7 +18,8 @@ dependencies = [
     # Deliberate upper bound: `mcp` 2.0 removed `mcp.server.fastmcp`, which
     # server.py is written against. Without it, a fresh install breaks at import.
     "mcp>=1.9.0,<2",
-    "mss>=9.0.1",
+    # `mss.MSS` appeared in 10.2, which deprecated the `mss.mss()` factory.
+    "mss>=10.2",
     "pillow>=10.3.0",
     "httpx>=0.27.0",
     # Declared explicitly: `mcp` brings it in transitively today (through
@@ -51,10 +52,5 @@ packages = ["src/winctl"]
 testpaths = ["tests"]
 # No test may block the suite.
 timeout = 60
-# Warnings are errors. One documented exception:
-filterwarnings = [
-    "error",
-    # mss 10.2 deprecates `mss.mss()` in favour of `mss.MSS()`. capture.py still
-    # uses the old form, with no consequence at runtime today.
-    "ignore:mss.mss is deprecated:DeprecationWarning",
-]
+# Warnings are errors, without exception.
+filterwarnings = ["error"]

@@ -40,7 +40,7 @@ class Shot:
 
 
 def monitors() -> list[dict]:
-    with mss.mss() as sct:
+    with mss.MSS() as sct:
         out = []
         for i, m in enumerate(sct.monitors):
             out.append(
@@ -96,7 +96,7 @@ def grab(
 
     region is expressed in virtual-desktop coordinates (x/y may be negative).
     """
-    with mss.mss() as sct:
+    with mss.MSS() as sct:
         if region:
             box = {
                 "left": int(region["x"]),
