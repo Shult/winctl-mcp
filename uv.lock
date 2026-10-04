@@ -879,7 +879,7 @@ wheels = [
 
 [[package]]
 name = "winctl-mcp"
-version = "0.1.0"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
@@ -899,7 +899,7 @@ dev = [
 requires-dist = [
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "mcp", specifier = ">=1.9.0,<2" },
-    { name = "mss", specifier = ">=9.0.1" },
+    { name = "mss", specifier = ">=10.2" },
     { name = "pillow", specifier = ">=10.3.0" },
     { name = "python-dotenv", specifier = ">=1.0" },
 ]
