@@ -248,9 +248,12 @@ use. If you hesitate to trust this code, this is the section to read.
 with `KEYEVENTF_UNICODE`, which makes typing independent from the keyboard
 layout — "é", "ç" or "€" come out identical on AZERTY and QWERTY. But modern
 controls (WinUI / Text Services Framework, including the Windows 11 Notepad)
-lose the contents of bursts: past the first few characters, they all take the
-value of the last one. One `SendInput` call per character, spaced by 3 ms,
-delivers the text intact everywhere.
+read injected events asynchronously: when they fall behind, every pending
+event takes the value of the last one. "winctl" comes out "nnnctl", and an emoji
+— a surrogate pair, two UTF-16 units — lands as two broken halves, even when
+both halves share a single call. One `SendInput` call per UTF-16 unit, spaced
+by 15 ms, delivers the text intact: measured on a cold-started Notepad under
+load, 3 ms failed every round, 15 ms never did.
 
 **Focus verified, never assumed.** Windows only grants `SetForegroundWindow` to
 the process that emitted the last user input. The server makes itself eligible
@@ -305,6 +308,8 @@ uv run pytest
 The suite covers the pure functions (`.env` resolution, key normalisation,
 notification dispatch), the geometry of captures on the real screen, and the MCP
 server contract — its name, its tool list, and the tightness of read-only mode.
+`tests/test_readme.py` holds this README to the code: the tool tables, the tool
+count and the typing delay are checked against the sources.
 
 Two `autouse` guardrails are set in `tests/conftest.py` and checked by
 `tests/test_guardrails.py`: `httpx` and `smtplib` raise as soon as they are
